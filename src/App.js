@@ -1,38 +1,52 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { Navbar, Jumbotron, Button, ListGroup, ListGroupItem, Grid, Row } from 'react-bootstrap';
+import { Navbar, Jumbotron, Button, ListGroup, Grid, Row } from 'react-bootstrap';
 import * as firebase from 'firebase';
+import Chats from './Chats';
 
 class App extends Component {
 
   constructor() {
     super();
     
-    this.ref = firebase.firestore().collection('todos');
+    this.ref = firebase.firestore().collection('chats');
     this.unsubscribe = null;
     
     this.state = {
       mensajes: 2,
-      chats: [],
+      chats : []
     };
   }
 
   componentDidMount() {
-    const rootRef = firebase.firestore().collection('todos');
-    rootRef.onSnapshot(function(snapshot) {
-        snapshot.docChanges.forEach(function(change) {
-            if (change.type === "added") {
-                console.log("New chat: ", change.doc.data());
-            }
-            if (change.type === "modified") {
-                console.log("Modified chat: ", change.doc.data());
-            }
-            if (change.type === "removed") {
-                console.log("Removed chat: ", change.doc.data());
-            }
-        });
-    });
+
+    this.ref.onSnapshot(function(snapshot) {
+
+      var list = [];
+
+      snapshot.docChanges.forEach(function(change) {
+
+        list.push(<Chats key={change.doc.id} name={change.doc.data().title} />);
+
+        if (change.type === "added") {
+            console.log("New chat: ", change.doc.data());
+        }
+        if (change.type === "modified") {
+            console.log("Modified chat: ", change.doc.data());
+        }
+        if (change.type === "removed") {
+            console.log("Removed chat: ", change.doc.data());
+        }
+
+      });
+
+      this.setState({
+        chats: list
+      });
+
+    }.bind(this));
+
   }
 
   render() {
@@ -55,12 +69,14 @@ class App extends Component {
               </p>
 
               <ListGroup>
-                <ListGroupItem href="#link1">Link 1</ListGroupItem>
+
+                {this.state.chats}
+                <Chats name={"cami7ord@gmail.com"} />
+                <Chats name={"oscargq10@gmail.com"} />
+                <Chats name={"xiaoxiao2007@hotmail.com"} />
+                
               </ListGroup>
 
-              <p>
-                <Button bsStyle="primary">Learn more {this.state.mensajes}</Button>
-              </p>
             </Jumbotron>
           </Row>
 
