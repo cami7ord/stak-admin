@@ -9,6 +9,9 @@ class ChatDetail extends React.Component {
     constructor(props) {
         super(props);
 
+        this.ref = firebase.firestore().collection('chats').doc(props.match.params.chatId).collection('messages');
+        this.unsubscribe = null;
+
         this.state = {
             id: "",
             hits: [],
@@ -17,14 +20,35 @@ class ChatDetail extends React.Component {
 
         console.log("Constructor", props.match.params.chatId);
     }
-    
+
     componentDidMount() {
 
-        console.log("DidMount", this.state.id);
+        console.log("DidMount", this.state.ref);
 
-        fetch(API + DEFAULT_QUERY)
-        .then(response => response.json())
-        .then(data => this.setState({ hits: data.hits }));
+        this.unsubscribe = this.state.ref.onSnapshot(function(snapshot) {
+
+            var list = [];
+      
+            snapshot.docChanges.forEach(function(change) {
+
+                list.push(<Message key={change.doc.id} id={change.doc.id} message={change.doc.data().message} />);
+
+                if (change.type === "added") {
+                    console.log("New message: ", change.doc.data());
+                }
+                if (change.type === "modified") {
+                    console.log("Modified message: ", change.doc.data());
+                }
+                if (change.type === "removed") {
+                    console.log("Removed message: ", change.doc.data());
+                }
+            });
+
+            this.setState({
+                hits: list
+            });
+
+        }.bind(this));
 
     }
 
@@ -36,42 +60,67 @@ class ChatDetail extends React.Component {
         return {
             id: nextProps.match.params.chatId,
             name: nextProps.match.params.chatId,
-            hits: []
+            hits: [],
+            ref: firebase.firestore().collection('chats').doc(nextProps.match.params.chatId).collection('messages')
         }
     }
 
     componentDidUpdate(prevProps, prevState) {
         console.log("componentDidUpdate()");
 
-        console.log("PrevState", prevState.hits.length);
-        console.log("NewState", this.state.hits.length);
+        console.log("PrevState", prevState.ref);
+        console.log("NewState", this.state.ref);
 
-        if(prevState.hits.length !== this.state.hits.length) {
-            console.log("Making the call", this.state);
-            fetch(API + DEFAULT_QUERY)
-            .then(response => response.json())
-            .then(data => this.setState({ hits: data.hits }));
+        if(prevState.id !== this.state.id) {
+
+            this.unsubscribe();
+
+            this.unsubscribe = this.state.ref.onSnapshot(function(snapshot) {
+
+                var list = [];
+          
+                snapshot.docChanges.forEach(function(change) {
+    
+                    list.push(<Message key={change.doc.id} id={change.doc.id} message={change.doc.data().message} />);
+    
+                    if (change.type === "added") {
+                        console.log("New message: ", change.doc.data());
+                    }
+                    if (change.type === "modified") {
+                        console.log("Modified message: ", change.doc.data());
+                    }
+                    if (change.type === "removed") {
+                        console.log("Removed message: ", change.doc.data());
+                    }
+                });
+    
+                this.setState({
+                    hits: list
+                });
+        
+            }.bind(this));
         }
 
-      }
+    }
 
     render() {
         const { match } = this.props;
         const hits = this.state.hits;
 
-        console.log("Rendering...", this.state.name);
+        console.log("Rendering...", this.state.id);
 
         return (
             <div>
-                <p> Hola {match.params.chatId} </p>
-                {hits.map(hit =>
-                <div key={hit.objectID}>
-                    <a href={hit.url}>{hit.title}</a>
-                </div>
-                )}
+                {hits}
             </div>
         );
     }
 }
+
+const Message = (props) => (
+    <div>
+        <h4> Message: {props.message} </h4>
+    </div>
+)
 
 export default ChatDetail;
