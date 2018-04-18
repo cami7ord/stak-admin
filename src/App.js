@@ -5,6 +5,7 @@ import { Navbar, Jumbotron, Button, ListGroup, Grid, Row } from 'react-bootstrap
 import * as firebase from 'firebase';
 import Chats from './Chats';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import ChatDetail from './ChatDetail';
 
 class App extends Component {
 
@@ -86,12 +87,6 @@ class App extends Component {
     );
   }
 }
-
-const ChatDetail = ({ match }) => (
-  <div>
-    <h1>Aqui: {match.params.chatId} </h1>
-  </div>
-)
 
 const SidebarItem = (props) => (
   <div style = {{
