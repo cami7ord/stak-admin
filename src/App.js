@@ -4,6 +4,7 @@ import './App.css';
 import { Navbar, Jumbotron, Button, ListGroup, Grid, Row } from 'react-bootstrap';
 import * as firebase from 'firebase';
 import Chats from './Chats';
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 class App extends Component {
 
@@ -27,7 +28,9 @@ class App extends Component {
 
       snapshot.docChanges.forEach(function(change) {
 
-        list.push(<Chats key={change.doc.id} name={change.doc.data().title} />);
+        console.log(change.doc.id);
+
+        list.push(<Chats key={change.doc.id} id={change.doc.id} name={change.doc.data().title} />);
 
         if (change.type === "added") {
             console.log("New chat: ", change.doc.data());
@@ -50,6 +53,9 @@ class App extends Component {
   }
 
   render() {
+
+    const { chats } = this.state.chats;
+
     return (
 
       <div className="App">
@@ -59,28 +65,17 @@ class App extends Component {
           <h1 className="App-title">Welcome to Stak</h1>
         </header>
 
-        <Grid>
-          
-          <Row>
-            <Jumbotron className="mx-auto" style={{ width: 500, margin: 20 }}>
-              <h1>Chats</h1>
-              <p>
-                Listado de los usuarios con conversaciones activas.
-              </p>
-
-              <ListGroup>
-
-                {this.state.chats}
-                <Chats name={"cami7ord@gmail.com"} />
-                <Chats name={"oscargq10@gmail.com"} />
-                <Chats name={"xiaoxiao2007@hotmail.com"} />
-                
-              </ListGroup>
-
-            </Jumbotron>
-          </Row>
-
-        </Grid>
+        <Router>
+          <div style={{ display: "flex" }}>
+            <Sidebar>
+              {this.state.chats}
+            </Sidebar>
+            <Main>
+              <h1>Welcome!</h1>
+              <Route path="/chats/:chatId" component={ChatDetail}/>
+            </Main>
+          </div>
+        </Router>
 
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
@@ -91,5 +86,38 @@ class App extends Component {
     );
   }
 }
+
+const ChatDetail = ({ match }) => (
+  <div>
+    <h1>Aqui: {match.params.chatId} </h1>
+  </div>
+)
+
+const SidebarItem = (props) => (
+  <div style = {{
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+    overflow: "hidden",
+    padding: "5px 10px"
+  }} {...props}/>
+)
+
+const Sidebar = (props) => (
+  <div style = {{
+    padding: "10px",
+    width: "16%",
+    background: "#f0f0f0",
+    overflow: "auto"
+  }} {...props}/>
+)
+
+const Main = (props) => (
+  <div style={{
+    flex: 1,
+    padding: "10px"
+  }}>
+    <div style={{ padding: "20px"}} {...props}/>
+  </div>
+)
 
 export default App;
