@@ -29,8 +29,6 @@ class App extends Component {
 
       snapshot.docChanges.forEach(function(change) {
 
-        console.log(change.doc.id);
-
         list.push(<Chats key={change.doc.id} id={change.doc.id} name={change.doc.data().title} />);
 
         if (change.type === "added") {
