@@ -60,7 +60,7 @@ class ChatDetail extends React.Component {
         return {
             id: nextProps.match.params.chatId,
             name: nextProps.match.params.chatId,
-            hits: [],
+            //hits: [],
             ref: firebase.firestore().collection('chats').doc(nextProps.match.params.chatId).collection('messages')
         }
     }
@@ -78,20 +78,9 @@ class ChatDetail extends React.Component {
             this.unsubscribe = this.state.ref.onSnapshot(function(snapshot) {
 
                 var list = [];
-          
-                snapshot.docChanges.forEach(function(change) {
-    
-                    list.push(<Message key={change.doc.id} id={change.doc.id} message={change.doc.data().message} />);
-    
-                    if (change.type === "added") {
-                        console.log("New message: ", change.doc.data());
-                    }
-                    if (change.type === "modified") {
-                        console.log("Modified message: ", change.doc.data());
-                    }
-                    if (change.type === "removed") {
-                        console.log("Removed message: ", change.doc.data());
-                    }
+
+                snapshot.forEach((doc) => {
+                    list.push(<Message key={doc.id} id={doc.id} message={doc.data().message} />);
                 });
     
                 this.setState({
