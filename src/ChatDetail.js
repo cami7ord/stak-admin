@@ -1,8 +1,6 @@
 import React from 'react';
+import { FormGroup, FormControl, Button } from 'react-bootstrap';
 import * as firebase from 'firebase';
-
-const API = 'https://hn.algolia.com/api/v1/search?query=';
-const DEFAULT_QUERY = 'redux';
 
 class ChatDetail extends React.Component {
 
@@ -31,7 +29,7 @@ class ChatDetail extends React.Component {
       
             snapshot.docChanges.forEach(function(change) {
 
-                list.push(<Message key={change.doc.id} id={change.doc.id} message={change.doc.data().message} />);
+                list.push(<Message key={change.doc.id} id={change.doc.id} name={change.doc.data().name} message={change.doc.data().message} />);
 
                 if (change.type === "added") {
                     console.log("New message: ", change.doc.data());
@@ -60,7 +58,6 @@ class ChatDetail extends React.Component {
         return {
             id: nextProps.match.params.chatId,
             name: nextProps.match.params.chatId,
-            //hits: [],
             ref: firebase.firestore().collection('chats').doc(nextProps.match.params.chatId).collection('messages')
         }
     }
@@ -80,7 +77,7 @@ class ChatDetail extends React.Component {
                 var list = [];
 
                 snapshot.forEach((doc) => {
-                    list.push(<Message key={doc.id} id={doc.id} message={doc.data().message} />);
+                    list.push(<Message key={doc.id} id={doc.id} name={doc.data().name} message={doc.data().message} />);
                 });
     
                 this.setState({
@@ -93,22 +90,40 @@ class ChatDetail extends React.Component {
     }
 
     render() {
-        const { match } = this.props;
         const hits = this.state.hits;
-
         console.log("Rendering...", this.state.id);
-
         return (
             <div>
+                <h3>{this.state.name}</h3>
+                <br/>
                 {hits}
+                <MessageForm />
             </div>
         );
     }
 }
 
 const Message = (props) => (
-    <div>
-        <h4> Message: {props.message} </h4>
+    <div style={{textAlign: 'left', flexDirection:'row', flexWrap:'wrap'}}>
+        <p> <span style={{color: '#707070'}}> {props.name}:</span> {props.message} </p>
+    </div>
+)
+
+const MessageForm = (props) => (
+    <div style={{
+        position: "absolute",
+        width: "80%",
+        bottom: 20
+      }}>
+        
+        <form>
+            <FormGroup controlId="formControlsTextarea">
+                <FormControl componentClass="textarea" placeholder="textarea" />
+            </FormGroup>
+        </form>
+
+        <Button style={{ float: "right" }} type="submit" >Enviar</Button>
+    
     </div>
 )
 

@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { Navbar, Jumbotron, Button, ListGroup, Grid, Row } from 'react-bootstrap';
 import * as firebase from 'firebase';
 import Chats from './Chats';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import ChatDetail from './ChatDetail';
 
 class App extends Component {
@@ -53,7 +52,7 @@ class App extends Component {
 
   render() {
 
-    const { chats } = this.state.chats;
+    const chats = this.state.chats;
 
     return (
 
@@ -67,18 +66,13 @@ class App extends Component {
         <Router>
           <div style={{ display: "flex" }}>
             <Sidebar>
-              {this.state.chats}
+              {chats}
             </Sidebar>
             <Main>
-              <h1>Welcome!</h1>
               <Route path="/chats/:chatId" component={ChatDetail}/>
             </Main>
           </div>
         </Router>
-
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
         
       </div>
 
@@ -86,19 +80,11 @@ class App extends Component {
   }
 }
 
-const SidebarItem = (props) => (
-  <div style = {{
-    whiteSpace: "nowrap",
-    textOverflow: "ellipsis",
-    overflow: "hidden",
-    padding: "5px 10px"
-  }} {...props}/>
-)
-
 const Sidebar = (props) => (
   <div style = {{
     padding: "10px",
     width: "16%",
+    height: "auto",
     background: "#f0f0f0",
     overflow: "auto"
   }} {...props}/>
@@ -106,7 +92,7 @@ const Sidebar = (props) => (
 
 const Main = (props) => (
   <div style={{
-    flex: 1,
+    //flex: 1,
     padding: "10px"
   }}>
     <div style={{ padding: "20px"}} {...props}/>
