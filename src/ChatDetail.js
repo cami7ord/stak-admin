@@ -11,12 +11,35 @@ class ChatDetail extends React.Component {
         this.unsubscribe = null;
 
         this.state = {
-            id: "",
+            id: '',
             hits: [],
-            name: ""
+            name: '',
+            value: ''
         };
 
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+
         console.log("Constructor", props.match.params.chatId);
+    }
+
+    handleChange(event) {
+        this.setState({value: event.target.value});
+    }
+    
+    handleSubmit(event) {
+        this.ref.add({
+            message: this.state.value,
+            name: "Camilo Baquero Jimenez",
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            uid: "fAgoNhcDp7e7ZisU9xboxm6Jc9t2"
+        });
+          
+        this.setState({
+            value: '',
+        });
+
+        event.preventDefault();
     }
 
     componentDidMount() {
@@ -97,7 +120,21 @@ class ChatDetail extends React.Component {
                 <h3>{this.state.name}</h3>
                 <br/>
                 {hits}
-                <MessageForm />
+                
+                <div style={{
+                    position: "absolute",
+                    width: "80%",
+                    bottom: 20}}>
+                    
+                    <form onSubmit={this.handleSubmit}>
+                        <FormGroup controlId="formControlsTextarea">
+                            <FormControl componentClass="textarea" placeholder="textarea" value={this.state.value} onChange={this.handleChange} />
+                            <Button style={{ float: "right" }} type="submit">Enviar</Button>
+                        </FormGroup>
+                    </form>
+                
+                </div>
+
             </div>
         );
     }
@@ -106,24 +143,6 @@ class ChatDetail extends React.Component {
 const Message = (props) => (
     <div style={{textAlign: 'left', flexDirection:'row', flexWrap:'wrap'}}>
         <p> <span style={{color: '#707070'}}> {props.name}:</span> {props.message} </p>
-    </div>
-)
-
-const MessageForm = (props) => (
-    <div style={{
-        position: "absolute",
-        width: "80%",
-        bottom: 20
-      }}>
-        
-        <form>
-            <FormGroup controlId="formControlsTextarea">
-                <FormControl componentClass="textarea" placeholder="textarea" />
-            </FormGroup>
-        </form>
-
-        <Button style={{ float: "right" }} type="submit" >Enviar</Button>
-    
     </div>
 )
 
