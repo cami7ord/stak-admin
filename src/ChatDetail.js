@@ -1,6 +1,7 @@
 import React from 'react';
-import { FormGroup, FormControl, Button } from 'react-bootstrap';
+import { Grid, Row, Col, FormGroup, FormControl, Button } from 'react-bootstrap';
 import * as firebase from 'firebase';
+import * as ReactDOM from 'react-dom';
 
 class ChatDetail extends React.Component {
 
@@ -30,7 +31,7 @@ class ChatDetail extends React.Component {
     handleSubmit(event) {
         this.ref.add({
             message: this.state.value,
-            name: "Camilo Baquero Jimenez",
+            name: "Admin",
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
             uid: "fAgoNhcDp7e7ZisU9xboxm6Jc9t2"
         });
@@ -40,6 +41,14 @@ class ChatDetail extends React.Component {
         });
 
         event.preventDefault();
+    }
+
+    scrollToBottom = () => {
+        const { messageList } = this.refs;
+        const scrollHeight = messageList.scrollHeight;
+        const height = messageList.clientHeight;
+        const maxScrollTop = scrollHeight - height;
+        ReactDOM.findDOMNode(messageList).scrollTop = maxScrollTop > 0 ? maxScrollTop : 0;
     }
 
     componentDidMount() {
@@ -112,9 +121,11 @@ class ChatDetail extends React.Component {
                 <h3>{this.state.name}</h3>
                 <br/>
 
-                <div style={{overflow: "auto", width: "100%", height:260 }}>
-                    {hits}
-                </div>
+                <Grid style={{overflow: "auto", height:240 }}>
+                    <Row className="show-grid">
+                        {hits}
+                    </Row>
+                </Grid>
                 
                 <div style={{
                     position: "absolute",
@@ -123,7 +134,7 @@ class ChatDetail extends React.Component {
                     
                     <form onSubmit={this.handleSubmit}>
                         <FormGroup controlId="formControlsTextarea">
-                            <FormControl componentClass="textarea" placeholder="textarea" value={this.state.value} onChange={this.handleChange} />
+                            <FormControl componentClass="textarea" placeholder="Nuevo mensaje" value={this.state.value} onChange={this.handleChange} />
                             <Button style={{ float: "right" , marginTop: 10 }} type="submit">Enviar</Button>
                         </FormGroup>
                     </form>
@@ -136,9 +147,13 @@ class ChatDetail extends React.Component {
 }
 
 const Message = (props) => (
-    <div style={{textAlign: 'left', flexDirection:'row', flexWrap:'wrap'}}>
-        <p> <span style={{color: '#707070'}}> {props.name}:</span> {props.message} </p>
-    </div>
+
+    <Col xs={12} md={8}>
+        <div style={{textAlign: 'left', flexDirection:'row', flexWrap:'wrap'}}>
+            <p> <span style={{color: '#707070'}}> {props.name}:</span> {props.message} </p>
+        </div>          
+    </Col>
+    
 )
 
 export default ChatDetail;
