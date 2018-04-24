@@ -111,7 +111,10 @@ class ChatDetail extends React.Component {
             <div>
                 <h3>{this.state.name}</h3>
                 <br/>
-                {hits}
+
+                <div style={{overflow: "auto", width: "100%", height:260 }}>
+                    {hits}
+                </div>
                 
                 <div style={{
                     position: "absolute",
@@ -121,7 +124,7 @@ class ChatDetail extends React.Component {
                     <form onSubmit={this.handleSubmit}>
                         <FormGroup controlId="formControlsTextarea">
                             <FormControl componentClass="textarea" placeholder="textarea" value={this.state.value} onChange={this.handleChange} />
-                            <Button style={{ float: "right" }} type="submit">Enviar</Button>
+                            <Button style={{ float: "right" , marginTop: 10 }} type="submit">Enviar</Button>
                         </FormGroup>
                     </form>
                 
