@@ -46,23 +46,12 @@ class ChatDetail extends React.Component {
 
         console.log("DidMount", this.state.ref);
 
-        this.unsubscribe = this.state.ref.onSnapshot(function(snapshot) {
+        this.unsubscribe = this.state.ref.orderBy("timestamp").onSnapshot(function(snapshot) {
 
             var list = [];
       
-            snapshot.docChanges.forEach(function(change) {
-
-                list.push(<Message key={change.doc.id} id={change.doc.id} name={change.doc.data().name} message={change.doc.data().message} />);
-
-                if (change.type === "added") {
-                    console.log("New message: ", change.doc.data());
-                }
-                if (change.type === "modified") {
-                    console.log("Modified message: ", change.doc.data());
-                }
-                if (change.type === "removed") {
-                    console.log("Removed message: ", change.doc.data());
-                }
+            snapshot.forEach(function(doc) {
+                list.push(<Message key={doc.id} id={doc.id} name={doc.data().name} message={doc.data().message} />);
             });
 
             this.setState({
@@ -88,18 +77,21 @@ class ChatDetail extends React.Component {
     componentDidUpdate(prevProps, prevState) {
         console.log("componentDidUpdate()");
 
-        console.log("PrevState", prevState.ref);
-        console.log("NewState", this.state.ref);
+        console.log("PrevState", prevState.ref.path);
+        console.log("NewState", this.state.ref.path);
 
-        if(prevState.id !== this.state.id) {
+        if(prevState.ref.path !== this.state.ref.path) {
 
             this.unsubscribe();
 
-            this.unsubscribe = this.state.ref.onSnapshot(function(snapshot) {
+            console.log("Subscribing to...", this.state.ref);
+
+            this.ref = this.state.ref;
+            this.unsubscribe = this.state.ref.orderBy("timestamp").onSnapshot(function(snapshot) {
 
                 var list = [];
 
-                snapshot.forEach((doc) => {
+                snapshot.forEach(function(doc) {
                     list.push(<Message key={doc.id} id={doc.id} name={doc.data().name} message={doc.data().message} />);
                 });
     
